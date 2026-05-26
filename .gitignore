@@ -9,3 +9,4 @@ static/uploads/*
 *.log
 .vercel
 .env*
+.env

@@ -9,7 +9,7 @@ export async function PUT({ request, cookies }) {
     const bcrypt = await import('bcryptjs');
     const { User } = await import('$lib/server/models/User');
     
-    const decoded = jwt.default.verify(token, 'dev-secret');
+    const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
     const { currentPassword, newPassword } = await request.json();
 
     const user = await User.findById(decoded.userId);

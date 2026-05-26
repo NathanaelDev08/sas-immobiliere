@@ -20,7 +20,7 @@ export async function PUT({ params, request, cookies }) {
     const token = cookies.get('token');
     if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
 
-    const decoded = jwt.verify(token, 'dev-secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
     const body = await request.json();
 
     // Vérifier propriété ou admin
@@ -46,7 +46,7 @@ export async function DELETE({ params, cookies }) {
     const token = cookies.get('token');
     if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
 
-    const decoded = jwt.verify(token, 'dev-secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
     const property = await Property.findById(params.id);
     if (!property) return json({ error: 'Non trouvé' }, { status: 404 });
 

@@ -10,7 +10,7 @@ export async function GET({ cookies }) {
     const token = cookies.get('token');
     if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
 
-    const decoded = jwt.verify(token, 'dev-secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
     const userId = new mongoose.Types.ObjectId(decoded.userId);
 
     const totalBiens = await Property.countDocuments({ proprietaire: userId });

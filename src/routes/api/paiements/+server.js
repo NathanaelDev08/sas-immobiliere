@@ -16,7 +16,7 @@ export async function GET({ cookies }) {
     if (token) {
       try {
         const jwt = await import('jsonwebtoken');
-        const decoded = jwt.default.verify(token, 'dev-secret');
+        const decoded = jwt.default.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
         // Super admin voit tout, vendeur voit ses paiements
         if (decoded.role !== 'super_admin' && decoded.role !== 'admin') {
           filter.user = decoded.userId;

@@ -16,7 +16,7 @@ export async function GET({ url, cookies }) {
     let isAdmin = false;
     if (token) {
       try {
-        const decoded = jwt.verify(token, 'dev-secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
         isAdmin = ['admin', 'super_admin'].includes(decoded.role);
       } catch (e) {}
     }
@@ -54,7 +54,7 @@ export async function POST({ request, cookies }) {
 
     let decoded;
     try {
-      decoded = jwt.verify(token, 'dev-secret');
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
       console.log('Token décodé:', decoded.userId);
     } catch (e) {
       return json({ error: 'Token invalide ou expiré' }, { status: 401 });

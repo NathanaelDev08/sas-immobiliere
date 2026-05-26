@@ -14,7 +14,7 @@ export async function POST({ request, cookies }) {
 
     const token = jwt.sign(
       { userId: user._id, email: user.email, nom: user.nom, prenom: user.prenom, role: user.role },
-      'dev-secret',
+      process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo',
       { expiresIn: '24h' }
     );
 

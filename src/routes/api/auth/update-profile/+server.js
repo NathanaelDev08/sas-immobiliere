@@ -9,7 +9,7 @@ export async function PUT({ request, cookies }) {
   if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
 
   try {
-    const decoded = jwt.verify(token, 'dev-secret');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
     const formData = await request.formData();
     
     const nom = formData.get('nom');
