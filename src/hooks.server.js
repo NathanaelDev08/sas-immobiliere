@@ -1,4 +1,11 @@
 import mongoose from 'mongoose';
+import '$lib/server/models/User';
+import '$lib/server/models/Property';
+import '$lib/server/models/Notification';
+import '$lib/server/models/Paiement';
+import '$lib/server/models/Subscription';
+import '$lib/server/models/Transaction';
+import '$lib/server/models/Visite';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sasAdmin:SasImmo2026@cluster0.gumgfbu.mongodb.net/sas-immobiliere?retryWrites=true&w=majority';
 
