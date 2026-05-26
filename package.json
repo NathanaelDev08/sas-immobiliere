@@ -13,16 +13,19 @@
   "dependencies": {
     "@sveltejs/adapter-auto": "latest",
     "@sveltejs/adapter-node": "latest",
-    "@sveltejs/kit": "latest",
-    "@sveltejs/vite-plugin-svelte": "latest",
+    "@sveltejs/adapter-vercel": "^6.3.3",
     "bcryptjs": "latest",
     "cookie-parser": "latest",
     "dotenv": "latest",
     "jsonwebtoken": "latest",
     "mongoose": "latest",
     "svelte": "latest",
-    "vite": "latest",
     "zod": "latest"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@sveltejs/kit": "^2.61.1",
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "vite": "^8.0.14"
+  }
 }
