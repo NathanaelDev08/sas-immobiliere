@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import '$lib/server/models/User';
-import '$lib/server/models/Property';
-import '$lib/server/models/Notification';
-import '$lib/server/models/Paiement';
-import '$lib/server/models/Subscription';
-import '$lib/server/models/Transaction';
-import '$lib/server/models/Visite';
+import './src/lib/server/models/User.js';
+import './src/lib/server/models/Property.js';
+import './src/lib/server/models/Notification.js';
+import './src/lib/server/models/Paiement.js';
+import './src/lib/server/models/Subscription.js';
+import './src/lib/server/models/Transaction.js';
+import './src/lib/server/models/Visite.js';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sasAdmin:SasImmo2026@cluster0.gumgfbu.mongodb.net/sas-immobiliere?retryWrites=true&w=majority';
 
@@ -18,23 +18,14 @@ async function connectDB() {
     cached.promise = mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 15000,
       connectTimeoutMS: 15000
-    }).then(m => {
-      console.log('✅ MongoDB connecté');
-      return m;
-    }).catch(e => {
-      console.error('❌ MongoDB erreur:', e.message);
-      throw e;
-    });
+    }).then(m => { console.log('✅ MongoDB connecté'); return m; })
+      .catch(e => { console.error('❌ MongoDB erreur:', e.message); throw e; });
   }
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 export const handle = async ({ event, resolve }) => {
-  try {
-    await connectDB();
-  } catch (e) {
-    console.error('DB connection failed:', e.message);
-  }
+  try { await connectDB(); } catch (e) { console.error('DB connection failed:', e.message); }
   return resolve(event);
 };
