@@ -15,3 +15,7 @@ export async function connectDB() {
   cached.conn = await cached.promise;
   return cached.conn;
 }
+
+// Enregistrer tous les modèles
+import '$lib/server/models/User';
+import '$lib/server/models/Property';

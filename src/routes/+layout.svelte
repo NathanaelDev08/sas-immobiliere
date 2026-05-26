@@ -2,9 +2,11 @@
   import { page } from '$app/stores';
 </script>
 
-{#if $page.url.pathname.startsWith('/admin')}
+{#if $page.url.pathname.startsWith('/admin') || $page.url.pathname.startsWith('/vendeur')}
+  <!-- Admin et Vendeur : pas de header public -->
   <slot />
 {:else}
+  <!-- Site public avec header -->
   <div class="public-layout">
     <header class="header">
       <div class="header-container">
@@ -28,7 +30,7 @@
         <div class="footer-col">
           <span class="footer-icon">🏢</span>
           <p><strong>SAS Immobilière</strong></p>
-          <p>Votre partenaire immobilier de confiance en Côte d'Ivoire.</p>
+          <p>Votre partenaire immobilier en Côte d'Ivoire.</p>
         </div>
         <div class="footer-col">
           <h4>Navigation</h4>
@@ -42,12 +44,8 @@
           <p>📱 +225 01 02 03 04</p>
           <p>📍 Abidjan, Côte d'Ivoire</p>
         </div>
-        <div class="footer-col">
-          <h4>À propos</h4>
-          <p>SAS Immobilière est votre partenaire de confiance pour trouver le bien immobilier de vos rêves en Côte d'Ivoire.</p>
-        </div>
       </div>
-      <div class="footer-bottom">© 2026 SAS Immobilière - Tous droits réservés</div>
+      <div class="footer-bottom">© 2026 SAS Immobilière</div>
     </footer>
   </div>
 {/if}
@@ -65,12 +63,10 @@
   .nav a:hover { color: #059669; }
   main { flex: 1; }
   .footer { background: #1e293b; color: #cbd5e1; margin-top: auto; }
-  .footer-container { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
+  .footer-container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
   .footer-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
   .footer-col h4 { color: white; margin: 0 0 1rem; }
   .footer-col a { display: block; color: #94a3b8; text-decoration: none; padding: 0.25rem 0; font-size: 0.9rem; }
-  .footer-col a:hover { color: white; }
-  .footer-col p { margin: 0.25rem 0; font-size: 0.9rem; }
   .footer-bottom { text-align: center; padding: 1rem; border-top: 1px solid #334155; font-size: 0.8rem; }
   @media (max-width: 768px) { .header-container { flex-wrap: wrap; height: auto; padding: 1rem; gap: 1rem; } .nav { width: 100%; justify-content: center; } }
 </style>

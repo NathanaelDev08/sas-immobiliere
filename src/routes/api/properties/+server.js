@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { Property } from '$lib/server/models/Property';
+import { User } from '$lib/server/models/User';
 import jwt from 'jsonwebtoken';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
