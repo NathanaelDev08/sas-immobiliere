@@ -1,0 +1,28 @@
+{
+  "name": "sas-immobiliere",
+  "version": "1.0.0",
+  "description": "Plateforme de Gestion Immobilière - SAS Immobilière",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "seed": "node scripts/seed-complet.js",
+    "start": "node build"
+  },
+  "dependencies": {
+    "@sveltejs/adapter-auto": "latest",
+    "@sveltejs/adapter-node": "latest",
+    "@sveltejs/kit": "latest",
+    "@sveltejs/vite-plugin-svelte": "latest",
+    "bcryptjs": "latest",
+    "cookie-parser": "latest",
+    "dotenv": "latest",
+    "jsonwebtoken": "latest",
+    "mongoose": "latest",
+    "svelte": "latest",
+    "vite": "latest",
+    "zod": "latest"
+  },
+  "type": "module"
+}
