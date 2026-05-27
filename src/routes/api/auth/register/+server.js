@@ -1,35 +1,23 @@
 import { json } from '@sveltejs/kit';
-const JWT_SECRET = process.env.JWT_SECRET || "MaCleSecrete2026";
-import { User } from '$lib/server/models/User';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import User from '$lib/server/models/User.js';
 
-export async function POST({ request, cookies }) {
-  try {
-    const body = await request.json();
-    const { email, phone, password, nom, prenom, role } = body;
-
-    const exists = await User.findOne({ $or: [{ email }, { phone }] });
-    if (exists) {
-      return json({ error: 'Cet email ou téléphone existe déjà' }, { status: 400 });
-    }
-
-    const user = await User.create({ email, phone, password, nom, prenom, role: role || 'client' });
-
-    const token = jwt.sign(
-      { userId: user._id, email: user.email, nom: user.nom, prenom: user.prenom, role: user.role },
-      process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo',
-      { expiresIn: '24h' }
-    );
-
-    cookies.set('token', token, {
-      httpOnly: true, path: '/', maxAge: 86400, sameSite: 'lax'
-    });
-
-    return json({
-      message: 'Inscription réussie',
-      user: { nom: user.nom, prenom: user.prenom, email: user.email, role: user.role, photo: user.photo }
-    }, { status: 201 });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
+export async function POST({ request, locals }) {
+  if (!locals.user || locals.user.role !== 'superadmin') {
+    return json({ error: 'Accès refusé' }, { status: 403 });
   }
+
+  const { name, email, phone, password, role, category, commission } = await request.json();
+
+  const exists = await User.findOne({ email });
+  if (exists) return json({ error: 'Email déjà utilisé' }, { status: 409 });
+
+  const hashed = await bcrypt.hash(password, 10);
+
+  const user = await User.create({
+    name, email, phone, role, category, commission,
+    password: hashed,
+  });
+
+  return json({ user: { id: user._id, name: user.name, role: user.role } }, { status: 201 });
 }

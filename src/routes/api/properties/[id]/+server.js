@@ -1,66 +1,23 @@
 import { json } from '@sveltejs/kit';
-const JWT_SECRET = process.env.JWT_SECRET || "MaCleSecrete2026";
-import { Property } from '$lib/server/models/Property';
-import jwt from 'jsonwebtoken';
+import Property from '$lib/server/models/Property.js';
 
-export async function GET({ params }) {
-  try {
-    const property = await Property.findById(params.id)
-      .populate('proprietaire', 'nom prenom email phone photo');
-    if (!property) return json({ error: 'Bien non trouvé' }, { status: 404 });
-    property.vues += 1;
-    await property.save();
-    return json({ property });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
-  }
+export async function GET({ params, locals }) {
+  if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });
+  const property = await Property.findById(params.id).populate('owner', 'name email');
+  if (!property) return json({ error: 'Bien introuvable' }, { status: 404 });
+  return json({ property });
 }
 
-export async function PUT({ params, request, cookies }) {
-  try {
-    const token = cookies.get('token');
-    if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
-    const body = await request.json();
-
-    // Vérifier propriété ou admin
-    const property = await Property.findById(params.id);
-    if (!property) return json({ error: 'Non trouvé' }, { status: 404 });
-
-    const isOwner = property.proprietaire.toString() === decoded.userId;
-    const isAdmin = ['admin', 'super_admin'].includes(decoded.role);
-
-    if (!isOwner && !isAdmin) {
-      return json({ error: 'Non autorisé' }, { status: 403 });
-    }
-
-    const updated = await Property.findByIdAndUpdate(params.id, body, { new: true });
-    return json({ property: updated });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
-  }
+export async function PUT({ params, request, locals }) {
+  if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });
+  const data = await request.json();
+  const property = await Property.findByIdAndUpdate(params.id, data, { new: true });
+  if (!property) return json({ error: 'Bien introuvable' }, { status: 404 });
+  return json({ property });
 }
 
-export async function DELETE({ params, cookies }) {
-  try {
-    const token = cookies.get('token');
-    if (!token) return json({ error: 'Non autorisé' }, { status: 401 });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev-jwt-secret-2024-sas-immo');
-    const property = await Property.findById(params.id);
-    if (!property) return json({ error: 'Non trouvé' }, { status: 404 });
-
-    const isOwner = property.proprietaire.toString() === decoded.userId;
-    const isAdmin = ['admin', 'super_admin'].includes(decoded.role);
-
-    if (!isOwner && !isAdmin) {
-      return json({ error: 'Non autorisé' }, { status: 403 });
-    }
-
-    await Property.findByIdAndDelete(params.id);
-    return json({ message: 'Bien supprimé' });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
-  }
+export async function DELETE({ params, locals }) {
+  if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });
+  await Property.findByIdAndDelete(params.id);
+  return json({ success: true });
 }
