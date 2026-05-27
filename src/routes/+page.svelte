@@ -2,185 +2,217 @@
   import { onMount } from 'svelte';
   import PropertyCard from '$lib/components/PropertyCard.svelte';
 
-  let featuredProperties = [];
+  let properties = [];
   let loading = true;
   let searchVille = '';
   let searchTransaction = '';
+  let searchType = '';
 
   onMount(async () => {
     try {
       const res = await fetch('/api/properties?limit=6');
       const data = await res.json();
-      featuredProperties = data.properties || [];
-    } catch(e) {
-      featuredProperties = [];
-    }
+      properties = data.properties || [];
+    } catch(e) { properties = []; }
     loading = false;
   });
 
   function handleSearch() {
-    const params = new URLSearchParams();
-    if (searchVille) params.set('ville', searchVille);
-    if (searchTransaction) params.set('transaction', searchTransaction);
-    window.location.href = '/properties?' + params.toString();
+    const p = new URLSearchParams();
+    if (searchVille) p.set('ville', searchVille);
+    if (searchTransaction) p.set('transaction', searchTransaction);
+    if (searchType) p.set('type', searchType);
+    window.location.href = '/properties?' + p.toString();
   }
 </script>
 
 <svelte:head>
-  <title>SAS Immobilière - Trouvez votre bien idéal en Côte d'Ivoire</title>
-  <meta name="description" content="Achetez, vendez ou louez des biens immobiliers en Côte d'Ivoire. Villas, appartements, terrains à Abidjan et partout en Côte d'Ivoire." />
+  <title>SAS Immobilière — Trouvez votre bien idéal en Côte d'Ivoire</title>
 </svelte:head>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <span class="hero-badge">N°1 de l'immobilier en Côte d'Ivoire</span>
-    <h1>Trouvez le bien<br/>de vos <span class="highlight">rêves</span></h1>
-    <p>Des milliers de villas, appartements et terrains à Abidjan et dans tout le pays</p>
-
-    <!-- Barre de recherche -->
-    <div class="search-bar">
-      <div class="search-field">
-        <span class="search-icon">📍</span>
-        <input
-          type="text"
-          bind:value={searchVille}
-          placeholder="Ville ou quartier..."
-          on:keydown={(e) => e.key === 'Enter' && handleSearch()}
-        />
-      </div>
-      <div class="search-divider"></div>
-      <div class="search-field">
-        <span class="search-icon">🏷️</span>
-        <select bind:value={searchTransaction}>
-          <option value="">Acheter ou louer</option>
-          <option value="vente">Acheter</option>
-          <option value="location">Louer</option>
-        </select>
-      </div>
-      <button class="search-btn" on:click={handleSearch}>
-        🔍 Rechercher
-      </button>
+  <div class="hero-bg"></div>
+  <div class="hero-body">
+    <div class="hero-text">
+      <span class="badge">🏆 N°1 de l'immobilier en Côte d'Ivoire</span>
+      <h1>Trouvez le bien<br/>de vos <em>rêves</em></h1>
+      <p>Des milliers de villas, appartements et terrains à Abidjan et dans tout le pays.</p>
     </div>
 
-    <!-- Stats rapides -->
-    <div class="hero-stats">
-      <div class="stat"><strong>500+</strong><span>Biens disponibles</span></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><strong>200+</strong><span>Clients satisfaits</span></div>
-      <div class="stat-divider"></div>
-      <div class="stat"><strong>10+</strong><span>Années d'expérience</span></div>
+    <div class="search-box">
+      <h3>Rechercher un bien</h3>
+      <div class="search-fields">
+        <div class="sf">
+          <label for="ville">📍 Ville ou quartier</label>
+          <input id="ville" type="text" bind:value={searchVille} placeholder="Ex: Cocody, Plateau..." />
+        </div>
+        <div class="sf">
+          <label for="trans">🏷️ Transaction</label>
+          <select id="trans" bind:value={searchTransaction}>
+            <option value="">Acheter ou louer</option>
+            <option value="vente">Acheter</option>
+            <option value="location">Louer</option>
+          </select>
+        </div>
+        <div class="sf">
+          <label for="type">🏠 Type</label>
+          <select id="type" bind:value={searchType}>
+            <option value="">Tous types</option>
+            <option value="residentiel">Résidentiel</option>
+            <option value="commercial">Commercial</option>
+            <option value="terrain">Terrain</option>
+          </select>
+        </div>
+      </div>
+      <button class="search-btn" on:click={handleSearch}>🔍 Rechercher</button>
     </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat"><strong>500+</strong><span>Biens disponibles</span></div>
+    <div class="vline"></div>
+    <div class="stat"><strong>200+</strong><span>Clients satisfaits</span></div>
+    <div class="vline"></div>
+    <div class="stat"><strong>10+</strong><span>Années d'expérience</span></div>
+    <div class="vline"></div>
+    <div class="stat"><strong>15+</strong><span>Villes couvertes</span></div>
   </div>
 </section>
 
 <!-- CATÉGORIES -->
-<section class="categories">
+<section class="section bg-white">
   <div class="container">
-    <h2 class="section-title">Parcourir par catégorie</h2>
-    <div class="categories-grid">
-      <a href="/properties?type=residentiel" class="category-card">
-        <span class="cat-icon">🏠</span>
-        <strong>Résidentiel</strong>
-        <span>Villas & Appartements</span>
+    <div class="sec-head">
+      <div>
+        <h2>Parcourir par catégorie</h2>
+        <p>Trouvez le type de bien qui vous correspond</p>
+      </div>
+    </div>
+    <div class="cat-grid">
+      <a href="/properties?type=residentiel&transaction=vente" class="cat">
+        <div class="cat-img" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe)">🏠</div>
+        <strong>Villa / Appartement</strong>
+        <span>À vendre</span>
       </a>
-      <a href="/properties?type=commercial" class="category-card">
-        <span class="cat-icon">🏪</span>
+      <a href="/properties?type=residentiel&transaction=location" class="cat">
+        <div class="cat-img" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0)">🔑</div>
+        <strong>Location</strong>
+        <span>Résidentiel</span>
+      </a>
+      <a href="/properties?type=commercial" class="cat">
+        <div class="cat-img" style="background:linear-gradient(135deg,#fef3c7,#fde68a)">🏪</div>
         <strong>Commercial</strong>
         <span>Bureaux & Commerces</span>
       </a>
-      <a href="/properties?type=terrain" class="category-card">
-        <span class="cat-icon">🌍</span>
+      <a href="/properties?type=terrain" class="cat">
+        <div class="cat-img" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0)">🌍</div>
         <strong>Terrain</strong>
         <span>Parcelles & Lots</span>
-      </a>
-      <a href="/properties?transaction=location" class="category-card">
-        <span class="cat-icon">🔑</span>
-        <strong>Location</strong>
-        <span>Maisons & Apparts</span>
       </a>
     </div>
   </div>
 </section>
 
 <!-- BIENS EN VEDETTE -->
-<section class="featured">
+<section class="section bg-gray">
   <div class="container">
-    <div class="section-header">
+    <div class="sec-head">
       <div>
-        <h2 class="section-title">Biens en vedette</h2>
-        <p class="section-sub">Les meilleures opportunités du moment</p>
+        <h2>Biens en vedette</h2>
+        <p>Les meilleures opportunités du moment</p>
       </div>
-      <a href="/properties" class="see-all">Voir tout →</a>
+      <a href="/properties" class="link-more">Voir tous les biens →</a>
     </div>
 
     {#if loading}
-      <div class="loading-grid">
+      <div class="skele-grid">
         {#each Array(6) as _}
-          <div class="skeleton-card">
-            <div class="skeleton-photo"></div>
-            <div class="skeleton-line"></div>
-            <div class="skeleton-line short"></div>
+          <div class="skele-card">
+            <div class="skele-img"></div>
+            <div class="skele-line"></div>
+            <div class="skele-line short"></div>
           </div>
         {/each}
       </div>
-    {:else if featuredProperties.length === 0}
-      <div class="empty-state">
+    {:else if properties.length === 0}
+      <div class="empty">
         <span>🏡</span>
-        <p>Les biens arrivent bientôt</p>
-        <a href="/contact" class="btn-outline">Nous contacter</a>
+        <p>Aucun bien disponible pour le moment</p>
+        <a href="/contact">Nous contacter</a>
       </div>
     {:else}
-      <div class="properties-grid">
-        {#each featuredProperties as property}
-          <PropertyCard {property} />
+      <div class="prop-grid">
+        {#each properties as p}
+          <PropertyCard property={p} />
         {/each}
       </div>
     {/if}
   </div>
 </section>
 
-<!-- POURQUOI NOUS CHOISIR -->
-<section class="why-us">
+<!-- POURQUOI NOUS -->
+<section class="section bg-white">
   <div class="container">
-    <h2 class="section-title center">Pourquoi nous choisir ?</h2>
+    <div class="sec-head center">
+      <div>
+        <h2>Pourquoi nous choisir ?</h2>
+        <p>Des milliers de familles nous font confiance</p>
+      </div>
+    </div>
     <div class="why-grid">
-      <div class="why-card">
-        <span class="why-icon">✅</span>
+      <div class="why">
+        <div class="why-ico" style="background:#dbeafe">✅</div>
         <h3>Biens vérifiés</h3>
-        <p>Tous nos biens sont vérifiés et documentés pour votre sécurité.</p>
+        <p>Chaque bien est visité et vérifié par notre équipe avant publication.</p>
       </div>
-      <div class="why-card">
-        <span class="why-icon">🤝</span>
-        <h3>Accompagnement complet</h3>
-        <p>Nos agents vous accompagnent de la recherche à la signature.</p>
+      <div class="why">
+        <div class="why-ico" style="background:#d1fae5">🤝</div>
+        <h3>Accompagnement total</h3>
+        <p>Nos agents vous guident de la recherche jusqu'à la signature du contrat.</p>
       </div>
-      <div class="why-card">
-        <span class="why-icon">💰</span>
+      <div class="why">
+        <div class="why-ico" style="background:#fef3c7">💰</div>
         <h3>Meilleurs prix</h3>
-        <p>Nous négocions les meilleurs prix pour vous sur le marché ivoirien.</p>
+        <p>Nous négocions pour vous les meilleures offres du marché ivoirien.</p>
       </div>
-      <div class="why-card">
-        <span class="why-icon">⚡</span>
+      <div class="why">
+        <div class="why-ico" style="background:#fce7f3">⚡</div>
         <h3>Réponse rapide</h3>
-        <p>Notre équipe répond à toutes vos demandes en moins de 24h.</p>
+        <p>Notre équipe répond à toutes vos demandes en moins de 24 heures.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- CTA FINAL -->
-<section class="cta">
+<!-- VILLES -->
+<section class="section bg-gray">
   <div class="container">
-    <div class="cta-card">
-      <div class="cta-text">
-        <h2>Vous avez un bien à vendre ou louer ?</h2>
-        <p>Publiez votre annonce gratuitement et touchez des milliers d'acheteurs.</p>
+    <div class="sec-head center">
+      <div>
+        <h2>Nos zones d'intervention</h2>
+        <p>Présents dans toutes les grandes villes de Côte d'Ivoire</p>
       </div>
-      <div class="cta-actions">
-        <a href="/contact" class="btn-white">Nous contacter</a>
-        <a href="/register" class="btn-outline-white">Créer un compte</a>
+    </div>
+    <div class="cities">
+      {#each ['Abidjan','Cocody','Plateau','Marcory','Yopougon','Bingerville','San-Pédro','Bouaké'] as city}
+        <a href="/properties?ville={city}" class="city-pill">📍 {city}</a>
+      {/each}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-box">
+      <div class="cta-left">
+        <h2>Vous avez un bien à vendre ou à louer ?</h2>
+        <p>Publiez votre annonce et touchez des milliers d'acheteurs potentiels.</p>
+      </div>
+      <div class="cta-btns">
+        <a href="/register" class="cta-btn-w">Créer un compte gratuit</a>
+        <a href="/contact" class="cta-btn-o">Nous contacter</a>
       </div>
     </div>
   </div>
@@ -189,249 +221,167 @@
 <style>
   /* HERO */
   .hero {
-    position: relative;
-    min-height: 90vh;
-    display: flex;
-    align-items: center;
     background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80') center/cover no-repeat;
-    color: white;
-    padding: 2rem 1.5rem;
+    position: relative; color: white; min-height: 85vh;
+    display: flex; flex-direction: column;
   }
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(15,23,42,0.85) 0%, rgba(5,150,105,0.5) 100%);
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(15,23,42,0.88) 0%, rgba(5,150,105,0.55) 100%);
   }
-  .hero-content {
-    position: relative;
-    z-index: 1;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
+  .hero-body {
+    position: relative; z-index: 1; flex: 1;
+    max-width: 1280px; margin: 0 auto; padding: 5rem 1.5rem 3rem;
+    display: flex; align-items: center; gap: 4rem; flex-wrap: wrap;
   }
-  .hero-badge {
-    display: inline-block;
-    background: rgba(5,150,105,0.9);
-    padding: 0.4rem 1rem;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    margin-bottom: 1.5rem;
+  .hero-text { flex: 1; min-width: 300px; }
+  .badge {
+    display: inline-block; background: rgba(5,150,105,0.85);
+    padding: 0.35rem 1rem; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem;
   }
-  .hero-content h1 {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-    font-weight: 800;
-    line-height: 1.1;
-    margin: 0 0 1rem;
+  .hero-text h1 {
+    font-size: clamp(2.5rem, 5vw, 3.8rem);
+    font-weight: 900; line-height: 1.1; margin-bottom: 1rem;
   }
-  .highlight { color: #34d399; }
-  .hero-content p {
-    font-size: 1.1rem;
-    opacity: 0.85;
-    margin: 0 0 2rem;
-  }
+  .hero-text h1 em { color: #34d399; font-style: normal; }
+  .hero-text p { font-size: 1.05rem; opacity: 0.85; max-width: 480px; line-height: 1.6; }
 
-  /* SEARCH BAR */
-  .search-bar {
-    display: flex;
-    align-items: center;
-    background: white;
-    border-radius: 16px;
-    padding: 0.5rem;
-    gap: 0;
-    margin-bottom: 2rem;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  }
-  .search-field {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    flex: 1;
-  }
-  .search-icon { font-size: 1.1rem; }
-  .search-field input, .search-field select {
-    border: none;
-    outline: none;
-    font-size: 0.95rem;
+  /* SEARCH BOX */
+  .search-box {
+    background: white; border-radius: 20px;
+    padding: 1.75rem; width: 400px; flex-shrink: 0;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.35);
     color: #1e293b;
-    background: transparent;
-    width: 100%;
   }
-  .search-divider { width: 1px; height: 30px; background: #e2e8f0; }
+  .search-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; color: #1e293b; }
+  .search-fields { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+  .sf { display: flex; flex-direction: column; gap: 0.3rem; }
+  .sf label { font-size: 0.78rem; font-weight: 600; color: #64748b; }
+  .sf input, .sf select {
+    padding: 0.65rem 0.9rem; border: 1.5px solid #e2e8f0;
+    border-radius: 10px; font-size: 0.9rem; color: #1e293b;
+    transition: border-color 0.15s; background: #f8fafc;
+  }
+  .sf input:focus, .sf select:focus { outline: none; border-color: #059669; background: white; }
   .search-btn {
-    background: #059669;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.95rem;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
+    width: 100%; padding: 0.85rem;
+    background: #059669; color: white; border: none;
+    border-radius: 12px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: background 0.15s;
   }
   .search-btn:hover { background: #047857; }
 
-  /* HERO STATS */
+  /* STATS */
   .hero-stats {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2rem;
+    position: relative; z-index: 1;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1.5rem; gap: 3rem; flex-wrap: wrap;
   }
   .stat { text-align: center; }
-  .stat strong { display: block; font-size: 1.8rem; font-weight: 800; color: #34d399; }
+  .stat strong { display: block; font-size: 2rem; font-weight: 800; color: #34d399; }
   .stat span { font-size: 0.8rem; opacity: 0.8; }
-  .stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.2); }
-
-  /* CONTAINER */
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+  .vline { width: 1px; height: 40px; background: rgba(255,255,255,0.15); }
 
   /* SECTIONS */
-  .section-title { font-size: 1.8rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; }
-  .section-title.center { text-align: center; }
-  .section-sub { color: #64748b; margin: 0; }
-  .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
-  .see-all { color: #059669; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .section { padding: 5rem 0; }
+  .bg-white { background: white; }
+  .bg-gray { background: #f8fafc; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+  .sec-head {
+    display: flex; align-items: flex-end;
+    justify-content: space-between; margin-bottom: 2.5rem;
+  }
+  .sec-head.center { justify-content: center; text-align: center; }
+  .sec-head h2 { font-size: 1.9rem; font-weight: 800; color: #1e293b; margin-bottom: 0.3rem; }
+  .sec-head p { color: #64748b; }
+  .link-more { color: #059669; text-decoration: none; font-weight: 600; font-size: 0.9rem; white-space: nowrap; }
 
   /* CATEGORIES */
-  .categories { padding: 4rem 0; background: white; }
-  .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+  .cat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+  .cat {
+    border-radius: 16px; background: #f8fafc; border: 2px solid #e2e8f0;
+    text-decoration: none; color: #1e293b; overflow: hidden;
+    transition: all 0.2s; text-align: center;
   }
-  .category-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 2rem 1rem;
-    background: #f8fafc;
-    border-radius: 16px;
-    text-decoration: none;
-    color: #1e293b;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    text-align: center;
-  }
-  .category-card:hover { border-color: #059669; background: #f0fdf4; transform: translateY(-4px); }
-  .cat-icon { font-size: 2.5rem; }
-  .category-card strong { font-size: 1rem; font-weight: 700; }
-  .category-card span { font-size: 0.8rem; color: #64748b; }
+  .cat:hover { border-color: #059669; transform: translateY(-4px); box-shadow: 0 12px 30px rgba(5,150,105,0.15); }
+  .cat-img { font-size: 3rem; padding: 2rem; display: flex; align-items: center; justify-content: center; }
+  .cat strong { display: block; font-weight: 700; padding: 0 1rem 0.3rem; }
+  .cat span { display: block; font-size: 0.8rem; color: #64748b; padding: 0 1rem 1.5rem; }
 
-  /* FEATURED */
-  .featured { padding: 4rem 0; background: #f8fafc; }
-  .properties-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
+  /* PROPERTIES GRID */
+  .prop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1.5rem; }
 
   /* SKELETONS */
-  .loading-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-  .skeleton-card { background: white; border-radius: 12px; overflow: hidden; }
-  .skeleton-photo {
-    height: 200px;
-    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-  }
-  .skeleton-line {
-    height: 14px;
-    background: #e2e8f0;
-    border-radius: 8px;
-    margin: 12px;
-    animation: shimmer 1.5s infinite;
-  }
-  .skeleton-line.short { width: 60%; }
-  @keyframes shimmer {
-    0% { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
-  }
+  .skele-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 1.5rem; }
+  .skele-card { background: white; border-radius: 14px; overflow: hidden; border: 1px solid #e2e8f0; }
+  .skele-img { height: 200px; background: linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%); background-size: 200% 100%; animation: sh 1.5s infinite; }
+  .skele-line { height: 14px; background: #e2e8f0; border-radius: 8px; margin: 14px; animation: sh 1.5s infinite; }
+  .skele-line.short { width: 55%; }
+  @keyframes sh { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
 
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 4rem;
-    color: #94a3b8;
-  }
-  .empty-state span { font-size: 4rem; display: block; margin-bottom: 1rem; }
-  .btn-outline {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.7rem 1.5rem;
-    border: 2px solid #059669;
-    color: #059669;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-  }
+  /* EMPTY */
+  .empty { text-align: center; padding: 5rem; color: #94a3b8; }
+  .empty span { font-size: 4rem; display: block; margin-bottom: 1rem; }
+  .empty p { margin-bottom: 1rem; }
+  .empty a { color: #059669; font-weight: 600; text-decoration: none; }
 
-  /* WHY US */
-  .why-us { padding: 4rem 0; background: white; }
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+  /* WHY */
+  .why-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; }
+  .why { padding: 2rem; border-radius: 16px; border: 1px solid #e2e8f0; background: #f8fafc; transition: all 0.2s; }
+  .why:hover { border-color: #059669; box-shadow: 0 8px 24px rgba(5,150,105,0.1); transform: translateY(-2px); }
+  .why-ico { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; }
+  .why h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; }
+  .why p { font-size: 0.85rem; color: #64748b; line-height: 1.6; }
+
+  /* CITIES */
+  .cities { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+  .city-pill {
+    padding: 0.6rem 1.2rem; background: white; border: 1.5px solid #e2e8f0;
+    border-radius: 999px; text-decoration: none; color: #475569;
+    font-size: 0.9rem; font-weight: 500; transition: all 0.15s;
   }
-  .why-card {
-    padding: 2rem;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s;
-  }
-  .why-card:hover { border-color: #059669; box-shadow: 0 8px 24px rgba(5,150,105,0.1); }
-  .why-icon { font-size: 2rem; display: block; margin-bottom: 1rem; }
-  .why-card h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 0 0 0.5rem; }
-  .why-card p { font-size: 0.85rem; color: #64748b; margin: 0; line-height: 1.6; }
+  .city-pill:hover { border-color: #059669; color: #059669; background: #f0fdf4; }
 
   /* CTA */
-  .cta { padding: 4rem 0; background: #f8fafc; }
-  .cta-card {
-    background: linear-gradient(135deg, #059669, #0284c7);
-    border-radius: 20px;
-    padding: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
-    flex-wrap: wrap;
+  .cta-section { padding: 4rem 0; background: white; }
+  .cta-box {
+    background: linear-gradient(135deg, #064e3b, #059669);
+    border-radius: 20px; padding: 3rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap;
   }
-  .cta-text h2 { color: white; font-size: 1.5rem; margin: 0 0 0.5rem; }
-  .cta-text p { color: rgba(255,255,255,0.85); margin: 0; }
-  .cta-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .btn-white {
-    padding: 0.8rem 1.5rem;
-    background: white;
-    color: #059669;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 700;
+  .cta-left h2 { color: white; font-size: 1.6rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .cta-left p { color: rgba(255,255,255,0.8); }
+  .cta-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .cta-btn-w {
+    padding: 0.85rem 1.75rem; background: white; color: #059669;
+    border-radius: 12px; text-decoration: none; font-weight: 700;
+    transition: all 0.15s; white-space: nowrap;
   }
-  .btn-outline-white {
-    padding: 0.8rem 1.5rem;
-    border: 2px solid white;
-    color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 700;
+  .cta-btn-w:hover { background: #f0fdf4; }
+  .cta-btn-o {
+    padding: 0.85rem 1.75rem; border: 2px solid rgba(255,255,255,0.5); color: white;
+    border-radius: 12px; text-decoration: none; font-weight: 700;
+    transition: all 0.15s; white-space: nowrap;
   }
+  .cta-btn-o:hover { background: rgba(255,255,255,0.1); }
 
+  @media (max-width: 1024px) {
+    .cat-grid { grid-template-columns: repeat(2,1fr); }
+    .why-grid { grid-template-columns: repeat(2,1fr); }
+  }
   @media (max-width: 768px) {
-    .search-bar { flex-direction: column; gap: 0.5rem; }
-    .search-divider { display: none; }
-    .search-btn { width: 100%; }
-    .hero-stats { gap: 1rem; }
-    .section-header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-    .cta-card { flex-direction: column; text-align: center; }
+    .hero-body { flex-direction: column; padding: 3rem 1.5rem 2rem; }
+    .search-box { width: 100%; }
+    .hero-stats { gap: 1.5rem; }
+    .vline { display: none; }
+    .cat-grid { grid-template-columns: repeat(2,1fr); }
+    .why-grid { grid-template-columns: 1fr; }
+    .cta-box { flex-direction: column; text-align: center; }
+    .cta-btns { width: 100%; justify-content: center; }
+    .sec-head { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
   }
 </style>
