@@ -16,16 +16,22 @@ async function connectDB() {
   if (cached.conn) return cached.conn;
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000
+      serverSelectionTimeoutMS: 25000,
+      connectTimeoutMS: 25000,
+      socketTimeoutMS: 25000,
+      bufferCommands: false
     }).then(m => { console.log('✅ MongoDB connecté'); return m; })
-      .catch(e => { console.error('❌ MongoDB erreur:', e.message); throw e; });
+      .catch(e => { 
+        cached.promise = null;
+        console.error('❌ MongoDB erreur:', e.message); 
+        throw e; 
+      });
   }
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 export const handle = async ({ event, resolve }) => {
-  try { await connectDB(); } catch (e) { console.error('DB connection failed:', e.message); }
+  connectDB().catch(e => console.error('DB connection failed:', e.message));
   return resolve(event);
 };
