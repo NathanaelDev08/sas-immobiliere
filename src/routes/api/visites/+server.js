@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+const JWT_SECRET = process.env.JWT_SECRET || "MaCleSecrete2026";
 import mongoose from 'mongoose';
 
 const Visite = mongoose.models.Visite || mongoose.model('Visite', new mongoose.Schema({

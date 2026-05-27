@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+const JWT_SECRET = process.env.JWT_SECRET || "MaCleSecrete2026";
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import jwt from 'jsonwebtoken';

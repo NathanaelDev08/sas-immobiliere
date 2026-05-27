@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit';
+const JWT_SECRET = process.env.JWT_SECRET || "MaCleSecrete2026";
 import { Notification } from '$lib/server/models/Notification';
 import jwt from 'jsonwebtoken';
 
