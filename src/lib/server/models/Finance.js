@@ -1,3 +1,6 @@
 import mongoose from 'mongoose';
-const financeSchema = new mongoose.Schema({}, { timestamps: true });
-export default mongoose.models.Finance || mongoose.model('Finance', financeSchema);
+
+const schema = new mongoose.Schema({}, { timestamps: true });
+const Finance = mongoose.models.Finance || mongoose.model('Finance', schema);
+export default Finance;
+export { Finance };

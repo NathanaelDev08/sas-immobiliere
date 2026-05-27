@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import Payment from '$lib/server/models/Payment.js';
+import { Payment } from '$lib/server/models/Payment.js';
 
 export async function GET({ locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

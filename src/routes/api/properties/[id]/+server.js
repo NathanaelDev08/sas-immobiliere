@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import Property from '$lib/server/models/Property.js';
+import { Property } from '$lib/server/models/Property.js';
 
 export async function GET({ params, locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

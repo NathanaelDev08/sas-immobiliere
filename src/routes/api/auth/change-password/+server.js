@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import bcrypt from 'bcryptjs';
-import User from '$lib/server/models/User.js';
+import { User } from '$lib/server/models/User.js';
 
 export async function POST({ request, locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

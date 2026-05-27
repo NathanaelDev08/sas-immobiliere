@@ -1,3 +1,6 @@
 import mongoose from 'mongoose';
-const tenantSchema = new mongoose.Schema({}, { timestamps: true });
-export default mongoose.models.Tenant || mongoose.model('Tenant', tenantSchema);
+
+const schema = new mongoose.Schema({}, { timestamps: true });
+const Tenant = mongoose.models.Tenant || mongoose.model('Tenant', schema);
+export default Tenant;
+export { Tenant };

@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import Tenant from '$lib/server/models/Tenant.js';
+import { Tenant } from '$lib/server/models/Tenant.js';
 
 export async function GET({ locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

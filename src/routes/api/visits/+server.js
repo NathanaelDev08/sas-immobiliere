@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import Visit from '$lib/server/models/Visit.js';
+import { Visit } from '$lib/server/models/Visit.js';
 
 export async function GET({ locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

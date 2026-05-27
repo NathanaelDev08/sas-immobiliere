@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import Contract from '$lib/server/models/Contract.js';
+import { Contract } from '$lib/server/models/Contract.js';
 
 export async function GET({ locals }) {
   if (!locals.user) return json({ error: 'Non authentifié' }, { status: 401 });

@@ -1,3 +1,6 @@
 import mongoose from 'mongoose';
-const visitSchema = new mongoose.Schema({}, { timestamps: true });
-export default mongoose.models.Visit || mongoose.model('Visit', visitSchema);
+
+const schema = new mongoose.Schema({}, { timestamps: true });
+const Visit = mongoose.models.Visit || mongoose.model('Visit', schema);
+export default Visit;
+export { Visit };
