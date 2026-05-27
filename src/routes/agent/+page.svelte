@@ -37,7 +37,7 @@
     <nav class="flex items-center gap-2 text-sm text-slate-400">
       <a href="/" class="hover:text-blue-600">Accueil</a>
       <span>/</span>
-      <a href="#" class="hover:text-blue-600">Agents</a>
+      <a href="/agents" class="hover:text-blue-600">Agents</a>
       <span>/</span>
       <span class="text-slate-600 font-medium">{agent.name}</span>
     </nav>

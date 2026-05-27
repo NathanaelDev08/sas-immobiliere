@@ -86,5 +86,5 @@
   .section h3 { margin: 0 0 0.75rem; }
   .footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; text-align: center; color: #94a3b8; }
   .small { font-size: 0.75rem; }
-  @media print { .no-print { display: none !important; } body { background: white; } }
+  @media print { .no-print { display: none !important; } :global(body) { background: white; } }
 </style>

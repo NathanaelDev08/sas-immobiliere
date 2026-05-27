@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
-import './src/lib/server/models/User.js';
-import './src/lib/server/models/Property.js';
-import './src/lib/server/models/Notification.js';
-import './src/lib/server/models/Paiement.js';
-import './src/lib/server/models/Subscription.js';
-import './src/lib/server/models/Transaction.js';
-import './src/lib/server/models/Visite.js';
+import './lib/server/models/User.js';
+import './lib/server/models/Property.js';
+import './lib/server/models/Notification.js';
+import './lib/server/models/Paiement.js';
+import './lib/server/models/Subscription.js';
+import './lib/server/models/Transaction.js';
+import './lib/server/models/Visite.js';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sasAdmin:SasImmo2026@cluster0.gumgfbu.mongodb.net/sas-immobiliere?retryWrites=true&w=majority';
 

@@ -136,10 +136,10 @@
         <div class="social-links">
           <h3>Suivez-nous</h3>
           <div class="social-icons">
-            <a href="#" title="Facebook">📘</a>
-            <a href="#" title="Instagram">📷</a>
-            <a href="#" title="WhatsApp">💬</a>
-            <a href="#" title="LinkedIn">💼</a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" title="Facebook">📘</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" title="Instagram">📷</a>
+            <a href="https://wa.me/2250000000000" target="_blank" rel="noopener noreferrer" title="WhatsApp">💬</a>
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" title="LinkedIn">💼</a>
           </div>
         </div>
       </div>

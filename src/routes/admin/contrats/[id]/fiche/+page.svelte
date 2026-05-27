@@ -163,7 +163,7 @@
 
   .entete { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
   .logo-box { display: flex; align-items: center; gap: 12px; }
-  .logo-icon { font-size: 2.5rem; }
+  :global(.logo-icon) { font-size: 2.5rem; }
   .logo-box h1 { font-size: 18pt; font-weight: 800; color: #1e3a5f; margin: 0; }
   .logo-box p { font-size: 9pt; color: #64748b; margin: 0; }
   .ref-box { text-align: right; font-size: 9pt; border: 1px solid #e2e8f0; padding: 8px 12px; }
@@ -208,7 +208,7 @@
 
   @media print {
     @page { size: A4; margin: 0; }
-    body { background: white; margin: 0; padding: 0; }
+    :global(body) { background: white; margin: 0; padding: 0; }
     .no-print { display: none !important; }
     .page-a4 { box-shadow: none; padding: 15mm 12mm; }
   }
