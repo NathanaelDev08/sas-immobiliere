@@ -1,4 +1,4 @@
-﻿import mongoose from 'mongoose';
+import mongoose from 'mongoose';
 import './lib/server/models/User.js';
 import './lib/server/models/Property.js';
 import './lib/server/models/Notification.js';
@@ -21,17 +21,13 @@ async function connectDB() {
       socketTimeoutMS: 25000,
       bufferCommands: false
     }).then(m => { console.log('MongoDB connecte'); return m; })
-      .catch(e => {
-        cached.promise = null;
-        console.error('MongoDB erreur:', e.message);
-        throw e;
-      });
+      .catch(e => { cached.promise = null; throw e; });
   }
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 export const handle = async ({ event, resolve }) => {
-  connectDB().catch(e => console.error('DB connection failed:', e.message));
+  connectDB().catch(e => console.error('DB error:', e.message));
   return resolve(event);
 };
