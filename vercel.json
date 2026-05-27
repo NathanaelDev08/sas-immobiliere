@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "src/routes/**/*.js": {
-      "maxDuration": 30
-    }
-  }
-}
+{"framework": "sveltekit", "buildCommand": "npm run build", "outputDirectory": ".vercel/output"}
