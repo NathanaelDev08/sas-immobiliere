@@ -1,34 +1,34 @@
-<script>
+﻿<script>
   import { page } from '$app/stores';
+  import BackToTop from '$lib/components/BackToTop.svelte';
 </script>
 
 {#if $page.url.pathname.startsWith('/admin') || $page.url.pathname.startsWith('/vendeur')}
-  <!-- Admin et Vendeur : pas de header public -->
   <slot />
 {:else}
-  <!-- Site public avec header -->
   <div class="public-layout">
     <header class="header">
       <div class="header-container">
         <a href="/" class="logo">
-          <span class="logo-icon">🏢</span>
+          <span class="logo-icon"></span>
           <div>
             <span class="logo-text">SAS Immobilière</span>
             <span class="logo-sub">Trouvez votre bien idéal</span>
           </div>
         </a>
         <nav class="nav">
-          <a href="/properties">🏠 Acheter</a>
-          <a href="/properties?transaction=location">🔑 Louer</a>
-          <a href="/contact">📞 Contact</a>
+          <a href="/properties"> Acheter</a>
+          <a href="/properties?transaction=location"> Louer</a>
+          <a href="/contact"> Contact</a>
         </nav>
       </div>
     </header>
-    <main><slot /></main><BackToTop />
+    <main><slot /></main>
+    <BackToTop />
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-col">
-          <span class="footer-icon">🏢</span>
+          <span class="footer-icon"></span>
           <p><strong>SAS Immobilière</strong></p>
           <p>Votre partenaire immobilier en Côte d'Ivoire.</p>
         </div>
@@ -40,12 +40,12 @@
         </div>
         <div class="footer-col">
           <h4>Contact</h4>
-          <p>📧 contact@sas-immo.ci</p>
-          <p>📱 +225 01 02 03 04</p>
-          <p>📍 Abidjan, Côte d'Ivoire</p>
+          <p> contact@sas-immo.ci</p>
+          <p> +225 01 02 03 04</p>
+          <p> Abidjan, Côte d'Ivoire</p>
         </div>
       </div>
-      <div class="footer-bottom">© 2026 SAS Immobilière</div>
+      <div class="footer-bottom"> 2026 SAS Immobilière</div>
     </footer>
   </div>
 {/if}
@@ -70,4 +70,3 @@
   .footer-bottom { text-align: center; padding: 1rem; border-top: 1px solid #334155; font-size: 0.8rem; }
   @media (max-width: 768px) { .header-container { flex-wrap: wrap; height: auto; padding: 1rem; gap: 1rem; } .nav { width: 100%; justify-content: center; } }
 </style>
-<!-- Ajouter dans le layout public -->
