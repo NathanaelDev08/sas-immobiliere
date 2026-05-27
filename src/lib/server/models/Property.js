@@ -1,51 +1,19 @@
 import mongoose from 'mongoose';
 
 const propertySchema = new mongoose.Schema({
-  titre: { type: String, required: true },
-  description: { type: String, required: true },
-  type: {
-    type: String,
-    enum: ['residentiel', 'commercial', 'terrain', 'vehicule', 'autre'],
-    required: true
-  },
-  transaction: {
-    type: String,
-    enum: ['vente', 'location', 'les_deux'],
-    required: true
-  },
-  prix: { type: Number, required: true },
-  devise: { type: String, default: 'XOF' },
-  surface: Number,
-  pieces: Number,
-  standing: String,
-  ville: { type: String, required: true },
-  quartier: String,
-  coordonnees: {
-    lat: Number,
-    lng: Number
-  },
-  photos: [String],
-  documents: [{
-    nom: String,
-    url: String
-  }],
-  proprietaire: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  statut: {
-    type: String,
-    enum: ['brouillon', 'en_attente', 'publie', 'vendu', 'loue'],
-    default: 'brouillon'
-  },
-  featured: { type: Boolean, default: false },
-  vues: { type: Number, default: 0 },
-  contacts: { type: Number, default: 0 }
+  title:       { type: String, required: true },
+  description: { type: String },
+  type:        { type: String, enum: ['Appartement', 'Villa', 'Terrain', 'Bureau', 'Commerce'], required: true },
+  transaction: { type: String, enum: ['Vente', 'Location'], required: true },
+  status:      { type: String, enum: ['Brouillon', 'Publié', 'Vendu', 'Loué'], default: 'Brouillon' },
+  price:       { type: Number, required: true },
+  city:        { type: String, required: true },
+  address:     { type: String },
+  area:        { type: Number },
+  rooms:       { type: Number },
+  images:      [{ type: String }],
+  views:       { type: Number, default: 0 },
+  owner:       { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
 
-propertySchema.index({ type: 1, statut: 1 });
-propertySchema.index({ ville: 1, prix: 1 });
-propertySchema.index({ proprietaire: 1 });
-
-export const Property = mongoose.models.Property || mongoose.model('Property', propertySchema);
+export default mongoose.models.Property || mongoose.model('Property', propertySchema);

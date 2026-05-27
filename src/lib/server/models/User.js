@@ -9,7 +9,11 @@ const userSchema = new mongoose.Schema({
   nom: { type: String, required: true },
   prenom: { type: String, required: true },
   photo: { type: String, default: '' },
-  isActive: { type: Boolean, default: true }
+  isActive: { type: Boolean, default: true },
+  categorie: { type: String, default: 'particulier' },
+  commission: { type: Number, default: 5 },
+  maxBiens: { type: Number, default: 5 },
+  biensCount: { type: Number, default: 0 }
 });
 
 userSchema.pre('save', async function() {
