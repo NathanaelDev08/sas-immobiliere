@@ -24,7 +24,7 @@
         </nav>
       </div>
     </header>
-    <main><slot /></main>
+    <main><slot /></main><BackToTop />
     <footer class="footer">
       <div class="footer-container">
         <div class="footer-col">
@@ -70,3 +70,4 @@
   .footer-bottom { text-align: center; padding: 1rem; border-top: 1px solid #334155; font-size: 0.8rem; }
   @media (max-width: 768px) { .header-container { flex-wrap: wrap; height: auto; padding: 1rem; gap: 1rem; } .nav { width: 100%; justify-content: center; } }
 </style>
+<!-- Ajouter dans le layout public -->

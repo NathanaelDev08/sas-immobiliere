@@ -1,18 +1,45 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
 
   let vendeurs = [];
-  let loading = true;
   let showForm = false;
-  let form = { email: '', phone: '', password: '', nom: '', prenom: '', plan: 'basic', commission: 5, maxBiens: 10 };
+  let filterCat = '';
+  let user = {};
+  let isSuperAdmin = false;
+  let form = { email: '', phone: '', password: '', nom: '', prenom: '', role: 'proprietaire', categorie: 'particulier', commission: 3, maxBiens: 5 };
 
-  onMount(loadVendeurs);
+  const categories = {
+    particulier: { label: '🏠 Particulier', commission: 3, maxBiens: 5, badge: 'background:#dbeafe;color:#1e40af;' },
+    entreprise: { label: '🏢 Entreprise', commission: 5, maxBiens: 50, badge: 'background:#e9d5ff;color:#6b21a8;' },
+    demarcheur: { label: '🚶 Démarcheur', commission: 10, maxBiens: 20, badge: 'background:#fef3c7;color:#92400e;' },
+  };
+
+  onMount(async () => {
+    // Vérifier que c'est un Super Admin
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (res.ok) {
+      user = (await res.json()).user;
+      if (user.role !== 'super_admin' && user.role !== 'admin') {
+        goto('/admin/dashboard');
+        return;
+      }
+      isSuperAdmin = true;
+      loadVendeurs();
+    } else {
+      goto('/admin/login');
+    }
+  });
 
   async function loadVendeurs() {
     const res = await fetch('/api/admin/vendeurs');
-    const data = await res.json();
-    vendeurs = data.vendeurs || [];
-    loading = false;
+    if (res.ok) vendeurs = (await res.json()).vendeurs || [];
+  }
+
+  function selectCategorie(cat) {
+    form.categorie = cat;
+    form.commission = categories[cat].commission;
+    form.maxBiens = categories[cat].maxBiens;
   }
 
   async function createVendeur() {
@@ -22,7 +49,7 @@
       body: JSON.stringify(form)
     });
     showForm = false;
-    form = { email: '', phone: '', password: '', nom: '', prenom: '', plan: 'basic', commission: 5, maxBiens: 10 };
+    form = { email: '', phone: '', password: '', nom: '', prenom: '', role: 'proprietaire', categorie: 'particulier', commission: 3, maxBiens: 5 };
     loadVendeurs();
   }
 
@@ -34,78 +61,101 @@
     });
     loadVendeurs();
   }
+
+  $: vendeursFiltres = filterCat ? vendeurs.filter(v => v.categorie === filterCat) : vendeurs;
 </script>
 
-<div class="page">
-  <div class="top-bar">
-    <h1>👥 Gestion des Vendeurs</h1>
-    <button class="btn-add" on:click={() => showForm = !showForm}>
+{#if !isSuperAdmin}
+  <div style="text-align:center;padding:4rem;">
+    <p style="font-size:2rem;">🔒</p>
+    <p style="color:#94a3b8;">Accès réservé au Super Admin</p>
+  </div>
+{:else}
+<div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+    <h1 style="font-size:1.5rem;margin:0;">👥 Gestion des Vendeurs</h1>
+    <button on:click={() => showForm = !showForm} style="padding:0.6rem 1.2rem;background:#059669;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">
       {showForm ? '✕ Annuler' : '+ Créer un vendeur'}
     </button>
   </div>
 
+  <!-- Filtres par catégorie -->
+  <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+    <button on:click={() => filterCat = ''} style="padding:0.4rem 0.8rem;border-radius:999px;border:1px solid #e2e8f0;background:{filterCat === '' ? '#059669' : 'white'};color:{filterCat === '' ? 'white' : '#475569'};cursor:pointer;font-size:0.85rem;">Tous ({vendeurs.length})</button>
+    {#each Object.entries(categories) as [key, cat]}
+      <button on:click={() => filterCat = key} style="padding:0.4rem 0.8rem;border-radius:999px;border:1px solid #e2e8f0;background:{filterCat === key ? '#059669' : 'white'};color:{filterCat === key ? 'white' : '#475569'};cursor:pointer;font-size:0.85rem;">
+        {cat.label} ({vendeurs.filter(v => v.categorie === key).length})
+      </button>
+    {/each}
+  </div>
+
   <!-- Formulaire création -->
   {#if showForm}
-    <div class="form-card">
-      <h2>Créer un compte vendeur</h2>
-      <div class="form-grid">
-        <input bind:value={form.nom} placeholder="Nom" />
-        <input bind:value={form.prenom} placeholder="Prénom" />
-        <input bind:value={form.email} placeholder="Email" type="email" />
-        <input bind:value={form.phone} placeholder="Téléphone" />
-        <input bind:value={form.password} placeholder="Mot de passe" type="password" />
-        <select bind:value={form.plan}>
-          <option value="basic">Basic</option>
-          <option value="pro">Pro</option>
-          <option value="business">Business</option>
-        </select>
-        <input bind:value={form.commission} placeholder="Commission %" type="number" />
-        <input bind:value={form.maxBiens} placeholder="Max biens" type="number" />
+    <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">
+      <h2 style="font-size:1.1rem;margin:0 0 1rem;">Créer un vendeur</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem;">
+        {#each Object.entries(categories) as [key, cat]}
+          <div on:click={() => selectCategorie(key)} style="padding:1rem;border-radius:10px;border:2px solid {form.categorie === key ? '#059669' : '#e2e8f0'};cursor:pointer;text-align:center;background:{form.categorie === key ? '#ecfdf5' : 'white'};">
+            <div style="font-size:1.5rem;">{cat.label.split(' ')[0]}</div>
+            <div style="font-weight:600;font-size:0.9rem;">{cat.label.split(' ')[1]}</div>
+            <div style="font-size:0.75rem;color:#94a3b8;">{cat.commission}% · {cat.maxBiens} biens</div>
+          </div>
+        {/each}
       </div>
-      <button class="btn-save" on:click={createVendeur}>Créer le vendeur</button>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.75rem;">
+        <input bind:value={form.nom} placeholder="Nom" style="padding:0.6rem;border:1px solid #e2e8f0;border-radius:8px;" />
+        <input bind:value={form.prenom} placeholder="Prénom" style="padding:0.6rem;border:1px solid #e2e8f0;border-radius:8px;" />
+        <input bind:value={form.email} placeholder="Email" type="email" style="padding:0.6rem;border:1px solid #e2e8f0;border-radius:8px;" />
+        <input bind:value={form.phone} placeholder="Téléphone" style="padding:0.6rem;border:1px solid #e2e8f0;border-radius:8px;" />
+        <input bind:value={form.password} placeholder="Mot de passe" type="password" style="padding:0.6rem;border:1px solid #e2e8f0;border-radius:8px;" />
+      </div>
+
+      <div style="display:flex;gap:1rem;margin-top:1rem;align-items:center;">
+        <div><strong>Commission :</strong> {form.commission}%</div>
+        <div><strong>Max biens :</strong> {form.maxBiens}</div>
+      </div>
+
+      <button on:click={createVendeur} style="margin-top:1rem;padding:0.7rem 1.5rem;background:#059669;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:600;">✅ Créer</button>
     </div>
   {/if}
 
-  <!-- Liste vendeurs -->
-  <div class="table-container">
-    <table>
+  <!-- Tableau -->
+  <div style="background:white;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+    <table style="width:100%;border-collapse:collapse;">
       <thead>
-        <tr>
-          <th>Vendeur</th>
-          <th>Contact</th>
-          <th>Plan</th>
-          <th>Commission</th>
-          <th>Biens</th>
-          <th>Statut</th>
-          <th>Actions</th>
+        <tr style="background:#f8fafc;">
+          <th style="text-align:left;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">Vendeur</th>
+          <th style="text-align:left;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">Catégorie</th>
+          <th style="text-align:left;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">Commission</th>
+          <th style="text-align:left;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">Biens</th>
+          <th style="text-align:left;padding:0.75rem;font-size:0.75rem;color:#94a3b8;">Statut</th>
         </tr>
       </thead>
       <tbody>
-        {#each vendeurs as v}
-          <tr>
-            <td>
-              <div class="user-info">
-                <div class="avatar">{v.prenom?.[0]}{v.nom?.[0]}</div>
+        {#each vendeursFiltres as v}
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:0.75rem;">
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <div style="width:32px;height:32px;border-radius:50%;background:#d1fae5;color:#065f46;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.7rem;">{v.prenom?.[0]}{v.nom?.[0]}</div>
                 <div>
-                  <strong>{v.prenom} {v.nom}</strong>
-                  <p class="sub">{v.role}</p>
+                  <strong style="font-size:0.9rem;">{v.prenom} {v.nom}</strong>
+                  <div style="font-size:0.75rem;color:#94a3b8;">{v.email}</div>
                 </div>
               </div>
             </td>
-            <td>
-              <p>{v.email}</p>
-              <p class="sub">{v.phone}</p>
+            <td style="padding:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:999px;font-size:0.75rem;font-weight:600;{categories[v.categorie]?.badge || 'background:#f1f5f9;color:#475569;'}">
+                {categories[v.categorie]?.label || v.categorie || 'Particulier'}
+              </span>
             </td>
-            <td><span class="badge-plan">{v.subscription?.plan || 'gratuit'}</span></td>
-            <td>{v.subscription?.commission || 5}%</td>
-            <td>{v.subscription?.biensCount || 0}/{v.subscription?.maxBiens || 3}</td>
-            <td>
-              <button class="toggle-btn {v.isActive ? 'active' : ''}" on:click={() => toggleStatut(v._id, !v.isActive)}>
+            <td style="padding:0.75rem;"><strong>{v.commission || 5}%</strong></td>
+            <td style="padding:0.75rem;">{v.biensCount || 0}/{v.maxBiens || 5}</td>
+            <td style="padding:0.75rem;">
+              <button on:click={() => toggleStatut(v._id, !v.isActive)} style="padding:0.3rem 0.7rem;border:none;border-radius:999px;font-size:0.75rem;cursor:pointer;background:{v.isActive ? '#d1fae5' : '#fee2e2'};color:{v.isActive ? '#065f46' : '#991b1b'};">
                 {v.isActive ? 'Actif' : 'Inactif'}
               </button>
-            </td>
-            <td>
-              <a href="/admin/vendeur/{v._id}" class="link">Voir</a>
             </td>
           </tr>
         {/each}
@@ -113,28 +163,4 @@
     </table>
   </div>
 </div>
-
-<style>
-  .page { max-width: 100%; }
-  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-  h1 { font-size: 1.5rem; color: #1e293b; }
-  .btn-add { padding: 0.6rem 1.2rem; background: #059669; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-
-  .form-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-  .form-card h2 { margin: 0 0 1rem; font-size: 1.1rem; }
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
-  .form-grid input, .form-grid select { padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 8px; }
-  .btn-save { padding: 0.6rem 1.5rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; }
-
-  .table-container { background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; }
-  th { text-align: left; padding: 0.75rem; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; background: #f8fafc; }
-  td { padding: 0.75rem; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
-  .user-info { display: flex; align-items: center; gap: 0.75rem; }
-  .avatar { width: 36px; height: 36px; background: #d1fae5; color: #065f46; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; }
-  .sub { font-size: 0.8rem; color: #94a3b8; margin: 0.15rem 0 0; }
-  .badge-plan { background: #dbeafe; color: #1e40af; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; }
-  .toggle-btn { padding: 0.3rem 0.8rem; border: none; border-radius: 999px; font-size: 0.75rem; cursor: pointer; background: #f1f5f9; color: #64748b; }
-  .toggle-btn.active { background: #d1fae5; color: #065f46; }
-  .link { color: #3b82f6; text-decoration: none; font-weight: 500; }
-</style>
+{/if}

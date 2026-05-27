@@ -4,6 +4,16 @@
   export let collapsed = false;
   export let toggleSidebar;
   import { page } from '$app/stores';
+  import { onMount } from 'svelte';
+
+  let notifCount = 0;
+
+  onMount(async () => {
+    try {
+      const res = await fetch('/api/notifications');
+      if (res.ok) notifCount = (await res.json()).nonLu || 0;
+    } catch(e) {}
+  });
 
   function isActive(path) { return $page.url.pathname.startsWith(path); }
   $: initials = (user.prenom?.[0] || '') + (user.nom?.[0] || 'A');
@@ -29,17 +39,22 @@
     <a href="/admin/paiements" class="nav-item" class:active={isActive('/admin/paiements')}><span class="nav-icon">💳</span>{#if !collapsed}<span>Paiements</span>{/if}</a>
     <div class="nav-category">SYSTÈME</div>
     <a href="/admin/vendeurs" class="nav-item" class:active={isActive('/admin/vendeurs')}><span class="nav-icon">👤</span>{#if !collapsed}<span>Vendeurs</span>{/if}</a>
-    <a href="/admin/notifications" class="nav-item" class:active={isActive('/admin/notifications')}><span class="nav-icon">🔔</span>{#if !collapsed}<span>Notifications</span>{/if}</a>
+    <a href="/admin/notifications" class="nav-item" class:active={isActive('/admin/notifications')}>
+      <span class="nav-icon">🔔</span>
+      {#if !collapsed}
+        <span>Notifications</span>
+        {#if notifCount > 0}
+          <span class="badge">{notifCount}</span>
+        {/if}
+      {/if}
+    </a>
     <a href="/admin/parametres" class="nav-item" class:active={isActive('/admin/parametres')}><span class="nav-icon">⚙️</span>{#if !collapsed}<span>Paramètres</span>{/if}</a>
   </nav>
 
   <div class="profile">
     <div class="avatar">{initials}</div>
     {#if !collapsed}
-      <div class="profile-info">
-        <p class="profile-name">{displayName}</p>
-        <p class="profile-role">{user.role || 'Utilisateur'}</p>
-      </div>
+      <div class="profile-info"><p class="profile-name">{displayName}</p><p class="profile-role">{user.role || 'Utilisateur'}</p></div>
       <button class="logout-btn" on:click={logout} title="Déconnexion">🚪</button>
     {/if}
   </div>
@@ -50,20 +65,18 @@
   .sidebar.collapsed { width: 64px; }
   @media (max-width: 1024px) { .sidebar { transform: translateX(-100%); } .sidebar.collapsed { width: 250px; transform: translateX(0); } }
   .logo { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid #f1f5f9; }
-  .logo-icon { font-size: 1.8rem; }
-  .logo-text { font-weight: 700; font-size: 1.1rem; color: #1e293b; }
+  .logo-icon { font-size: 1.8rem; } .logo-text { font-weight: 700; font-size: 1.1rem; color: #1e293b; }
   .collapse-btn { margin-left: auto; background: none; border: none; cursor: pointer; }
   .nav { flex: 1; padding: 1rem 0.75rem; overflow-y: auto; }
   .nav-category { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.75rem 0.5rem 0.5rem; }
   .collapsed .nav-category { display: none; }
   .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; border-radius: 8px; color: #475569; text-decoration: none; font-size: 0.9rem; }
   .nav-item:hover { background: #f8fafc; }
-  .nav-item.active { background: #d1fae5; color: #065f46; font-weight: 600; }
+  .nav-item.active { background: #064e3b20; color: #064e3b; font-weight: 600; }
   .nav-icon { font-size: 1.1rem; width: 24px; text-align: center; flex-shrink: 0; }
+  .badge { background: #ef4444; color: white; padding: 0.15rem 0.4rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700; margin-left: auto; }
   .profile { padding: 1rem; border-top: 1px solid #f1f5f9; display: flex; align-items: center; gap: 0.75rem; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #d1fae5; color: #065f46; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
-  .profile-info { flex: 1; min-width: 0; }
-  .profile-name { font-weight: 600; font-size: 0.85rem; color: #1e293b; margin: 0; }
-  .profile-role { font-size: 0.75rem; color: #94a3b8; margin: 0; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #064e3b20; color: #064e3b; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+  .profile-info { flex: 1; min-width: 0; } .profile-name { font-weight: 600; font-size: 0.85rem; color: #1e293b; margin: 0; } .profile-role { font-size: 0.75rem; color: #94a3b8; margin: 0; }
   .logout-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; }
 </style>
