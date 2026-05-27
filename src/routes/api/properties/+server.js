@@ -4,14 +4,16 @@ import { MongoClient } from 'mongodb';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://sasAdmin:SasImmo2026@cluster0.gumgfbu.mongodb.net/sas-immobiliere?retryWrites=true&w=majority';
 
 const client = new MongoClient(MONGODB_URI, {
-  serverSelectionTimeoutMS: 30000,
-  connectTimeoutMS: 30000
+  serverSelectionTimeoutMS: 60000,
+  connectTimeoutMS: 60000,
+  socketTimeoutMS: 90000,
 });
 
 let db;
 
 async function getDb() {
   if (!db) {
+    console.log('🔌 Tentative connexion MongoDB...');
     await client.connect();
     db = client.db();
     console.log('✅ MongoDB connecté (properties)');
@@ -34,12 +36,15 @@ export async function GET({ url }) {
     if (ville) filter.ville = new RegExp(ville, 'i');
     if (transaction) filter.transaction = transaction;
     
+    console.log('🔍 Recherche biens...');
     const properties = await collection.find(filter)
       .sort({ createdAt: -1 })
       .limit(limit)
       .toArray();
-      
-    // Peupler les propriétaires (jointure manuelle)
+    
+    console.log(`✅ ${properties.length} biens trouvés`);
+    
+    // Peupler les propriétaires
     const usersCollection = database.collection('users');
     for (const p of properties) {
       if (p.proprietaire) {
@@ -53,7 +58,7 @@ export async function GET({ url }) {
     
     return json({ properties, pagination: { total: properties.length, limit } });
   } catch (error) {
-    console.error('Erreur properties:', error);
+    console.error('❌ Erreur properties:', error);
     return json({ error: error.message }, { status: 500 });
   }
 }
